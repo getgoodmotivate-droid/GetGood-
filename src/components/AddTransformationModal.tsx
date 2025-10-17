@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Camera, X, Upload, Image as ImageIcon, Save, RefreshCw } from 'lucide-react';
+import { Camera, X, Save, RefreshCw } from 'lucide-react';
 import { Transformation } from '../types';
 import { compressImage, createBeforeAfterImage } from '../utils/imageProcessing';
 

@@ -18,10 +18,10 @@ export class AudioPlayer {
       onend: () => {
         this.currentSound = null;
       },
-      onloaderror: (id, error) => {
+      onloaderror: (_id, error) => {
         console.error('Error loading audio:', error);
       },
-      onplayerror: (id, error) => {
+      onplayerror: (_id, error) => {
         console.error('Error playing audio:', error);
       }
     });

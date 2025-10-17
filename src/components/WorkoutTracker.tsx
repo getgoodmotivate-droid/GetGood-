@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Minus, RotateCcw, Volume2, Music as MusicIcon, Trophy, Calendar, Play, Pause, Edit2, Settings } from 'lucide-react';
+import { Plus, Minus, RotateCcw, Volume2, Trophy, Calendar, Play, Pause, Edit2, Settings } from 'lucide-react';
 import { UserData, Exercise } from '../types';
 import { speakPhrase } from '../utils/textToSpeech';
 import { audioPlayer } from '../utils/audioPlayer';

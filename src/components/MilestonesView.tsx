@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trophy, Target, Plus, Edit2, Trash2, Star, Award, TrendingUp } from 'lucide-react';
+import { Trophy, Target, Plus, Trash2, Star, Award, TrendingUp } from 'lucide-react';
 import { Milestone } from '../types';
 import { getProgressPercentage } from '../utils/milestones';
 
