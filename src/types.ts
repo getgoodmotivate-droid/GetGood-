@@ -53,6 +53,25 @@ export interface SubscriptionData {
   stripeSubscriptionId?: string;
 }
 
+export interface PlantData {
+  name: string;
+  type: 'cactus' | 'flower' | 'tree' | 'bamboo';
+  growthStage: 0 | 1 | 2 | 3 | 4; // 0=seed, 1=sprout, 2=young, 3=mature, 4=blooming
+  health: number; // 0-100
+  waterLevel: number; // 0-100
+  lastWatered: string | null;
+  totalWaterings: number;
+  daysAlive: number;
+}
+
+export interface LoginStreak {
+  currentStreak: number;
+  longestStreak: number;
+  lastLoginDate: string | null;
+  totalLogins: number;
+  loginDates: string[];
+}
+
 export interface UserData {
   setupComplete: boolean;
   startDate: string | null;
@@ -70,6 +89,8 @@ export interface UserData {
   milestones: Milestone[];
   totalWorkoutDays: number;
   totalRepsCompleted: number;
+  plant: PlantData;
+  loginStreak: LoginStreak;
 }
 
 export interface MotivationalPhrase {

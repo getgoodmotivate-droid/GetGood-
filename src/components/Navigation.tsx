@@ -1,17 +1,19 @@
 import React from 'react';
-import { Home, TrendingUp, Trophy, Menu, X, Target, MessageCircle } from 'lucide-react';
+import { Home, TrendingUp, Trophy, Menu, X, Target, MessageCircle, Sprout } from 'lucide-react';
 import { useState } from 'react';
 
 interface NavigationProps {
-  currentView: 'workout' | 'achievements' | 'walloffame' | 'milestones' | 'coach';
-  onNavigate: (view: 'workout' | 'achievements' | 'walloffame' | 'milestones' | 'coach') => void;
+  currentView: 'workout' | 'achievements' | 'walloffame' | 'milestones' | 'coach' | 'plant';
+  onNavigate: (view: 'workout' | 'achievements' | 'walloffame' | 'milestones' | 'coach' | 'plant') => void;
+  plantNeedsWater?: boolean;
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ currentView, onNavigate }) => {
+export const Navigation: React.FC<NavigationProps> = ({ currentView, onNavigate, plantNeedsWater }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
     { id: 'workout' as const, label: 'Workout', icon: Home },
+    { id: 'plant' as const, label: 'Plant', icon: Sprout, badge: plantNeedsWater },
     { id: 'achievements' as const, label: 'Progress', icon: TrendingUp },
     { id: 'milestones' as const, label: 'Milestones', icon: Target },
     { id: 'coach' as const, label: 'AI Coach', icon: MessageCircle },
@@ -43,8 +45,8 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onNavigate 
         transition-transform duration-300
       `}>
         <div className="glass-effect rounded-2xl p-2 max-w-4xl mx-auto">
-          <div className="flex gap-2 justify-around">
-            {navItems.map(({ id, label, icon: Icon }) => (
+          <div className="flex gap-2 justify-around overflow-x-auto">
+            {navItems.map(({ id, label, icon: Icon, badge }) => (
               <button
                 key={id}
                 onClick={() => {
@@ -53,7 +55,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onNavigate 
                 }}
                 className={`
                   flex-1 flex flex-col md:flex-row items-center justify-center gap-2 p-3 rounded-xl
-                  transition-all duration-300
+                  transition-all duration-300 relative
                   ${currentView === id 
                     ? 'bg-primary-500 text-white shadow-lg' 
                     : 'hover:bg-white/10'
@@ -61,7 +63,10 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onNavigate 
                 `}
               >
                 <Icon className="w-5 h-5" />
-                <span className="text-sm md:text-base font-medium">{label}</span>
+                <span className="text-sm md:text-base font-medium whitespace-nowrap">{label}</span>
+                {badge && (
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                )}
               </button>
             ))}
           </div>

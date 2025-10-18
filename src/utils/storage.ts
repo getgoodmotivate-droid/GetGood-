@@ -24,6 +24,23 @@ const defaultUserData: UserData = {
   milestones: [],
   totalWorkoutDays: 0,
   totalRepsCompleted: 0,
+  plant: {
+    name: 'Buddy',
+    type: 'cactus',
+    growthStage: 0,
+    health: 100,
+    waterLevel: 50,
+    lastWatered: null,
+    totalWaterings: 0,
+    daysAlive: 0,
+  },
+  loginStreak: {
+    currentStreak: 0,
+    longestStreak: 0,
+    lastLoginDate: null,
+    totalLogins: 0,
+    loginDates: [],
+  },
 };
 
 export const loadUserData = (): UserData => {

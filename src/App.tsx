@@ -17,10 +17,12 @@ import { MilestonesView } from './components/MilestonesView';
 import { MilestoneToast } from './components/MilestoneToast';
 import { SettingsModal } from './components/SettingsModal';
 import { ChatbotView } from './components/ChatbotView';
+import { PlantCareView } from './components/PlantCareView';
 import { initializeMilestones, updateMilestones, getNewlyAchievedMilestones } from './utils/milestones';
 import { resetUserData } from './utils/storage';
+import { updateLoginStreak, updatePlantDaily, canWaterPlant } from './utils/plantCare';
 
-type AppView = 'setup' | 'workout' | 'review' | 'achievements' | 'walloffame' | 'milestones' | 'coach';
+type AppView = 'setup' | 'workout' | 'review' | 'achievements' | 'walloffame' | 'milestones' | 'coach' | 'plant';
 
 function App() {
   const [userData, setUserData] = useState<UserData>(loadUserData());
@@ -50,6 +52,28 @@ function App() {
       setUserData({
         ...userData,
         milestones,
+      });
+    }
+
+    // Update login streak
+    const updatedStreak = updateLoginStreak(userData.loginStreak);
+    if (updatedStreak.totalLogins !== userData.loginStreak.totalLogins) {
+      setUserData({
+        ...userData,
+        loginStreak: updatedStreak,
+      });
+    }
+
+    // Update plant daily
+    const lastUpdate = userData.plant.lastWatered;
+    const shouldUpdatePlant = !lastUpdate || 
+      (new Date().getTime() - new Date(lastUpdate).getTime()) > 24 * 60 * 60 * 1000;
+    
+    if (shouldUpdatePlant) {
+      const updatedPlant = updatePlantDaily(userData.plant);
+      setUserData({
+        ...userData,
+        plant: updatedPlant,
       });
     }
 
@@ -176,8 +200,12 @@ function App() {
     });
   };
 
-  const handleNavigate = (view: 'workout' | 'achievements' | 'walloffame' | 'milestones' | 'coach') => {
+  const handleNavigate = (view: 'workout' | 'achievements' | 'walloffame' | 'milestones' | 'coach' | 'plant') => {
     setCurrentView(view);
+  };
+
+  const handleUpdatePlant = (plant: UserData['plant']) => {
+    setUserData({ ...userData, plant });
   };
 
   const handleEditGoals = (data: Partial<UserData>) => {
@@ -261,6 +289,7 @@ function App() {
   const subscriptionStatus = checkSubscriptionStatus(userData.subscription);
   const daysRemaining = getDaysRemaining(userData.subscription);
   const isPremium = isPremiumFeatureAvailable(userData.subscription);
+  const plantNeedsWater = userData.plant.waterLevel < 30 || canWaterPlant(userData.plant);
 
   if (isLoading) {
     return (
@@ -347,8 +376,9 @@ function App() {
       ) : (
         <>
           <Navigation 
-            currentView={currentView as 'workout' | 'achievements' | 'walloffame' | 'milestones' | 'coach'}
+            currentView={currentView as 'workout' | 'achievements' | 'walloffame' | 'milestones' | 'coach' | 'plant'}
             onNavigate={handleNavigate}
+            plantNeedsWater={plantNeedsWater}
           />
           
           {currentView === 'workout' && (
@@ -381,6 +411,13 @@ function App() {
           
           {currentView === 'coach' && (
             <ChatbotView userData={userData} />
+          )}
+          
+          {currentView === 'plant' && (
+            <PlantCareView 
+              userData={userData}
+              onUpdatePlant={handleUpdatePlant}
+            />
           )}
           
           {currentView === 'walloffame' && (
