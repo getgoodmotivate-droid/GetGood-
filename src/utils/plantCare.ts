@@ -2,14 +2,18 @@ import { PlantData, LoginStreak } from '../types';
 
 export const PLANT_EMOJIS = {
   cactus: ['🌵', '🌵', '🌵🌵', '🌵🌵🌵', '🌵🌵🌵🌸'],
-  flower: ['🌱', '🌿', '🪴', '🌻', '🌻✨'],
+  sunflower: ['🌱', '🌿', '🌻', '🌻🌻', '🌻✨💛'],
+  tulip: ['🌱', '🌷', '🌷🌷', '🌷🌷🌷', '🌷✨🌸'],
+  daisy: ['🌱', '🌼', '🌼🌼', '🌼🌼🌼', '🌼✨🤍'],
   tree: ['🌰', '🌱', '🌲', '🌳', '🌳🍎'],
   bamboo: ['🌾', '🎋', '🎋🎋', '🎋🎋🎋', '🎋🎋🎋✨'],
 };
 
 export const PLANT_NAMES = {
   cactus: ['Spike', 'Prickles', 'Desert Buddy', 'Hardy'],
-  flower: ['Bloom', 'Petal', 'Sunny', 'Blossom'],
+  sunflower: ['Sunny', 'Ray', 'Bloom', 'Sunshine'],
+  tulip: ['Tulip', 'Petal', 'Flora', 'Grace'],
+  daisy: ['Daisy', 'Whitey', 'Cheerful', 'Happy'],
   tree: ['Groot', 'Oakley', 'Forest', 'Willow'],
   bamboo: ['Zen', 'Lucky', 'Bamboo Bob', 'Peace'],
 };

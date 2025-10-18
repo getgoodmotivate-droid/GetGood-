@@ -6,45 +6,36 @@ import { LoadingSpinner } from './components/LoadingSpinner';
 import { Navigation } from './components/Navigation';
 import { AchievementsView } from './components/AchievementsView';
 import { WallOfFame } from './components/WallOfFame';
-import { PricingModal } from './components/PricingModal';
-import { PremiumBadge } from './components/PremiumBadge';
 import { UserData, Exercise, WeeklyAchievement, Transformation, Milestone } from './types';
 import { loadUserData, saveUserData } from './utils/storage';
 import { initializeVoices } from './utils/textToSpeech';
-import { initializeTrial, checkSubscriptionStatus, getDaysRemaining, isPremiumFeatureAvailable } from './utils/subscription';
 import { EditGoalsModal } from './components/EditGoalsModal';
 import { MilestonesView } from './components/MilestonesView';
 import { MilestoneToast } from './components/MilestoneToast';
 import { SettingsModal } from './components/SettingsModal';
 import { ChatbotView } from './components/ChatbotView';
 import { PlantCareView } from './components/PlantCareView';
+import { EarningsView } from './components/EarningsView';
+import { PlantWidget } from './components/PlantWidget';
 import { initializeMilestones, updateMilestones, getNewlyAchievedMilestones } from './utils/milestones';
 import { resetUserData } from './utils/storage';
 import { updateLoginStreak, updatePlantDaily, canWaterPlant } from './utils/plantCare';
+import { requestPayout } from './utils/earningsSystem';
 
-type AppView = 'setup' | 'workout' | 'review' | 'achievements' | 'walloffame' | 'milestones' | 'coach' | 'plant';
+type AppView = 'setup' | 'workout' | 'review' | 'achievements' | 'walloffame' | 'milestones' | 'coach' | 'plant' | 'earnings';
 
 function App() {
   const [userData, setUserData] = useState<UserData>(loadUserData());
   const [currentView, setCurrentView] = useState<AppView>('setup');
   const [isLoading, setIsLoading] = useState(true);
-  const [showPricingModal, setShowPricingModal] = useState(false);
   const [showEditGoals, setShowEditGoals] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [achievedMilestone, setAchievedMilestone] = useState<Milestone | null>(null);
+  const [showPlantWidget, setShowPlantWidget] = useState(true);
 
   useEffect(() => {
     // Initialize text-to-speech voices
     initializeVoices();
-
-    // Initialize trial if not set
-    if (!userData.subscription.trialStartDate) {
-      const trial = initializeTrial();
-      setUserData({
-        ...userData,
-        subscription: trial,
-      });
-    }
 
     // Initialize milestones if not set
     if (!userData.milestones || userData.milestones.length === 0) {
@@ -200,12 +191,28 @@ function App() {
     });
   };
 
-  const handleNavigate = (view: 'workout' | 'achievements' | 'walloffame' | 'milestones' | 'coach' | 'plant') => {
+  const handleNavigate = (view: 'workout' | 'achievements' | 'walloffame' | 'milestones' | 'coach' | 'plant' | 'earnings') => {
     setCurrentView(view);
   };
 
   const handleUpdatePlant = (plant: UserData['plant']) => {
     setUserData({ ...userData, plant });
+  };
+
+  const handleUpdateEarnings = (earnings: UserData['earnings']) => {
+    setUserData({ ...userData, earnings });
+  };
+
+  const handleRequestPayout = (email: string) => {
+    const updatedEarnings = requestPayout(userData.earnings, email);
+    setUserData({
+      ...userData,
+      earnings: updatedEarnings,
+      paypalEmail: email,
+    });
+    
+    // In production, this would call your backend to process PayPal payout
+    // For now, it just marks as pending
   };
 
   const handleEditGoals = (data: Partial<UserData>) => {
@@ -265,30 +272,6 @@ function App() {
     window.location.reload();
   };
 
-  const handleUpgrade = (plan: 'monthly' | 'yearly') => {
-    // For now, just mark as premium (in production, integrate with Stripe)
-    console.log('Upgrading to:', plan);
-    
-    // Temporary: Mark as premium immediately
-    // In production, this would happen after successful Stripe payment
-    setUserData({
-      ...userData,
-      subscription: {
-        ...userData.subscription,
-        status: 'premium',
-        subscriptionStartDate: new Date().toISOString(),
-      },
-    });
-    
-    setShowPricingModal(false);
-    
-    // TODO: Integrate with Stripe Checkout
-    // window.location.href = `stripe_checkout_url_for_${plan}`;
-  };
-
-  const subscriptionStatus = checkSubscriptionStatus(userData.subscription);
-  const daysRemaining = getDaysRemaining(userData.subscription);
-  const isPremium = isPremiumFeatureAvailable(userData.subscription);
   const plantNeedsWater = userData.plant.waterLevel < 30 || canWaterPlant(userData.plant);
 
   if (isLoading) {
@@ -306,41 +289,6 @@ function App() {
 
   return (
     <div className="min-h-screen animate-fade-in">
-      {/* Trial/Premium Badge */}
-      {currentView !== 'setup' && currentView !== 'review' && (
-        <div className="fixed top-20 right-4 z-40">
-          {subscriptionStatus === 'trial' ? (
-            <div className="glass-effect px-4 py-2 rounded-full text-sm">
-              <span className="text-slate-300">{daysRemaining} days left in trial</span>
-              <button
-                onClick={() => setShowPricingModal(true)}
-                className="ml-2 text-primary-400 hover:text-primary-300 font-semibold"
-              >
-                Upgrade
-              </button>
-            </div>
-          ) : subscriptionStatus === 'active' ? (
-            <PremiumBadge size="md" />
-          ) : (
-            <button
-              onClick={() => setShowPricingModal(true)}
-              className="glass-effect px-4 py-2 rounded-full text-sm hover:bg-white/20 transition-all"
-            >
-              <span className="text-red-400 font-semibold">Trial Expired</span>
-              <span className="ml-2 text-primary-400">Upgrade Now</span>
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Pricing Modal */}
-      <PricingModal
-        isOpen={showPricingModal}
-        onClose={() => setShowPricingModal(false)}
-        daysRemaining={daysRemaining}
-        onUpgrade={handleUpgrade}
-      />
-
       {/* Edit Goals Modal */}
       <EditGoalsModal
         isOpen={showEditGoals}
@@ -354,6 +302,19 @@ function App() {
         milestone={achievedMilestone}
         onClose={() => setAchievedMilestone(null)}
       />
+
+      {/* Floating Plant Widget */}
+      {showPlantWidget && currentView !== 'plant' && currentView !== 'setup' && currentView !== 'review' && (
+        <PlantWidget
+          plant={userData.plant}
+          needsWater={plantNeedsWater}
+          onWater={() => {
+            const updatedPlant = updatePlantDaily(userData.plant);
+            handleUpdatePlant(updatedPlant);
+          }}
+          onClose={() => setShowPlantWidget(false)}
+        />
+      )}
 
       {/* Settings Modal */}
       <SettingsModal
@@ -376,9 +337,10 @@ function App() {
       ) : (
         <>
           <Navigation 
-            currentView={currentView as 'workout' | 'achievements' | 'walloffame' | 'milestones' | 'coach' | 'plant'}
+            currentView={currentView as 'workout' | 'achievements' | 'walloffame' | 'milestones' | 'coach' | 'plant' | 'earnings'}
             onNavigate={handleNavigate}
             plantNeedsWater={plantNeedsWater}
+            currentBalance={userData.earnings.currentBalance}
           />
           
           {currentView === 'workout' && (
@@ -386,8 +348,6 @@ function App() {
               userData={userData}
               onUpdateExercises={handleUpdateExercises}
               onCheckProgress={handleCheckProgress}
-              isPremium={isPremium}
-              onShowPricing={() => setShowPricingModal(true)}
               onEditGoals={() => setShowEditGoals(true)}
               onShowSettings={() => setShowSettings(true)}
             />
@@ -417,6 +377,14 @@ function App() {
             <PlantCareView 
               userData={userData}
               onUpdatePlant={handleUpdatePlant}
+              onUpdateEarnings={handleUpdateEarnings}
+            />
+          )}
+
+          {currentView === 'earnings' && (
+            <EarningsView
+              userData={userData}
+              onRequestPayout={handleRequestPayout}
             />
           )}
           

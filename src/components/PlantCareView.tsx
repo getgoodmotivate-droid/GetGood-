@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Droplets, Heart, TrendingUp, Award, Sparkles, Edit2, Calendar, Trophy } from 'lucide-react';
+import { Droplets, Heart, TrendingUp, Award, Sparkles, Edit2, Calendar, Trophy, RefreshCw } from 'lucide-react';
 import { UserData } from '../types';
 import { 
   waterPlant, 
@@ -9,31 +9,56 @@ import {
   getGrowthStageName,
   canWaterPlant,
   getTimeUntilNextWatering,
-  PLANT_NAMES,
   initializePlant
 } from '../utils/plantCare';
+import { WateringAnimation } from './WateringAnimation';
+import { PlantSelection } from './PlantSelection';
+import { addEarning } from '../utils/earningsSystem';
 
 interface PlantCareViewProps {
   userData: UserData;
   onUpdatePlant: (plant: UserData['plant']) => void;
+  onUpdateEarnings: (earnings: UserData['earnings']) => void;
 }
 
-export const PlantCareView: React.FC<PlantCareViewProps> = ({ userData, onUpdatePlant }) => {
+export const PlantCareView: React.FC<PlantCareViewProps> = ({ userData, onUpdatePlant, onUpdateEarnings }) => {
   const [showCelebration, setShowCelebration] = useState(false);
   const [showNameEdit, setShowNameEdit] = useState(false);
+  const [showPlantSelection, setShowPlantSelection] = useState(false);
+  const [showWateringAnimation, setShowWateringAnimation] = useState(false);
   const [newName, setNewName] = useState(userData.plant.name);
 
   const handleWater = () => {
     if (!canWaterPlant(userData.plant)) return;
     
-    const updatedPlant = waterPlant(userData.plant);
-    onUpdatePlant(updatedPlant);
+    // Show watering animation
+    setShowWateringAnimation(true);
     
-    // Show celebration if plant grew
-    if (updatedPlant.growthStage > userData.plant.growthStage) {
-      setShowCelebration(true);
-      setTimeout(() => setShowCelebration(false), 3000);
-    }
+    setTimeout(() => {
+      const updatedPlant = waterPlant(userData.plant);
+      onUpdatePlant(updatedPlant);
+      
+      // Add earnings for watering
+      const updatedEarnings = addEarning(
+        userData.earnings,
+        0.01, // £0.01 per watering
+        'goal_completion',
+        'Watered plant'
+      );
+      onUpdateEarnings(updatedEarnings);
+      
+      // Show celebration if plant grew
+      if (updatedPlant.growthStage > userData.plant.growthStage) {
+        setShowCelebration(true);
+        setTimeout(() => setShowCelebration(false), 3000);
+      }
+    }, 2000); // After animation
+  };
+
+  const handleChangePlant = (type: UserData['plant']['type']) => {
+    const newPlant = initializePlant(type);
+    onUpdatePlant(newPlant);
+    setShowPlantSelection(false);
   };
 
   const handleNameChange = () => {
@@ -51,10 +76,30 @@ export const PlantCareView: React.FC<PlantCareViewProps> = ({ userData, onUpdate
   return (
     <div className="min-h-screen p-4 py-6 md:py-8">
       <div className="max-w-4xl mx-auto animate-fade-in">
+        {/* Watering Animation */}
+        <WateringAnimation 
+          show={showWateringAnimation} 
+          onComplete={() => setShowWateringAnimation(false)} 
+        />
+
         {/* Celebration */}
         {showCelebration && (
           <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-50">
             <div className="animate-pulse-slow text-8xl">🎉 Your plant grew! 🌱</div>
+          </div>
+        )}
+
+        {/* Plant Selection Modal */}
+        {showPlantSelection && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowPlantSelection(false)} />
+            <div className="relative glass-effect rounded-3xl p-6 md:p-8 max-w-4xl w-full">
+              <h2 className="text-2xl font-bold mb-4 text-center">Choose Your Plant</h2>
+              <PlantSelection 
+                selectedType={plant.type} 
+                onSelect={handleChangePlant} 
+              />
+            </div>
           </div>
         )}
 
@@ -118,9 +163,18 @@ export const PlantCareView: React.FC<PlantCareViewProps> = ({ userData, onUpdate
           </div>
 
           {/* Plant Emoji */}
-          <div className="text-9xl mb-8 animate-scale-in">
+          <div className="text-9xl mb-4 animate-scale-in">
             {getPlantEmoji(plant)}
           </div>
+
+          {/* Change Plant Button */}
+          <button
+            onClick={() => setShowPlantSelection(true)}
+            className="btn-secondary text-sm mb-8"
+          >
+            <RefreshCw className="inline w-4 h-4 mr-2" />
+            Change Plant Type
+          </button>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

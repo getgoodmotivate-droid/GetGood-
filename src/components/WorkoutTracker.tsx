@@ -8,8 +8,6 @@ interface WorkoutTrackerProps {
   userData: UserData;
   onUpdateExercises: (exercises: Exercise[]) => void;
   onCheckProgress: () => void;
-  isPremium: boolean;
-  onShowPricing: () => void;
   onEditGoals: () => void;
   onShowSettings: () => void;
 }
@@ -18,8 +16,6 @@ export const WorkoutTracker: React.FC<WorkoutTrackerProps> = ({
   userData, 
   onUpdateExercises,
   onCheckProgress,
-  isPremium,
-  onShowPricing,
   onEditGoals,
   onShowSettings
 }) => {
@@ -137,11 +133,6 @@ export const WorkoutTracker: React.FC<WorkoutTrackerProps> = ({
           </button>
           <button
             onClick={() => {
-              if (!isPremium) {
-                onShowPricing();
-                return;
-              }
-              
               if (isPlayingMusic) {
                 audioPlayer.stop();
                 setIsPlayingMusic(false);
@@ -160,11 +151,6 @@ export const WorkoutTracker: React.FC<WorkoutTrackerProps> = ({
               <Play className="w-4 h-4 md:w-5 md:h-5 text-primary-400" />
             )}
             <span className="text-sm md:text-base truncate">{userData.selectedSong}</span>
-            {!isPremium && (
-              <span className="absolute -top-2 -right-2 bg-yellow-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">
-                PRO
-              </span>
-            )}
           </button>
         </div>
 

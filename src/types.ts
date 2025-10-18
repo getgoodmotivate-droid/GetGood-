@@ -55,13 +55,36 @@ export interface SubscriptionData {
 
 export interface PlantData {
   name: string;
-  type: 'cactus' | 'flower' | 'tree' | 'bamboo';
+  type: 'cactus' | 'sunflower' | 'tulip' | 'daisy' | 'tree' | 'bamboo';
   growthStage: 0 | 1 | 2 | 3 | 4; // 0=seed, 1=sprout, 2=young, 3=mature, 4=blooming
   health: number; // 0-100
   waterLevel: number; // 0-100
   lastWatered: string | null;
   totalWaterings: number;
   daysAlive: number;
+}
+
+export interface UserEarnings {
+  totalEarned: number; // Total ever earned
+  currentBalance: number; // Available to cash out
+  lifetimePayouts: number; // Total cashed out
+  earningsHistory: {
+    id: string;
+    amount: number;
+    source: 'ad_view' | 'goal_completion' | 'streak_bonus' | 'referral';
+    date: string;
+    description: string;
+  }[];
+  payoutHistory: {
+    id: string;
+    amount: number;
+    method: 'paypal';
+    email: string;
+    status: 'pending' | 'completed' | 'failed';
+    date: string;
+  }[];
+  adViewsContributed: number;
+  goalsCompleted: number;
 }
 
 export interface LoginStreak {
@@ -91,6 +114,10 @@ export interface UserData {
   totalRepsCompleted: number;
   plant: PlantData;
   loginStreak: LoginStreak;
+  earnings: UserEarnings;
+  spotifyConnected: boolean;
+  spotifyPlaylistId?: string;
+  paypalEmail?: string;
 }
 
 export interface MotivationalPhrase {

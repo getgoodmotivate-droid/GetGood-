@@ -26,7 +26,7 @@ const defaultUserData: UserData = {
   totalRepsCompleted: 0,
   plant: {
     name: 'Buddy',
-    type: 'cactus',
+    type: 'sunflower',
     growthStage: 0,
     health: 100,
     waterLevel: 50,
@@ -41,6 +41,18 @@ const defaultUserData: UserData = {
     totalLogins: 0,
     loginDates: [],
   },
+  earnings: {
+    totalEarned: 0,
+    currentBalance: 0,
+    lifetimePayouts: 0,
+    earningsHistory: [],
+    payoutHistory: [],
+    adViewsContributed: 0,
+    goalsCompleted: 0,
+  },
+  spotifyConnected: false,
+  spotifyPlaylistId: undefined,
+  paypalEmail: undefined,
 };
 
 export const loadUserData = (): UserData => {
