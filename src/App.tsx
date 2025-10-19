@@ -6,6 +6,7 @@ import { LoadingSpinner } from './components/LoadingSpinner';
 import { Navigation } from './components/Navigation';
 import { AchievementsView } from './components/AchievementsView';
 import { WallOfFame } from './components/WallOfFame';
+import { FeatureGuide } from './components/FeatureGuide';
 import { UserData, Exercise, WeeklyAchievement, Transformation, Milestone } from './types';
 import { loadUserData, saveUserData } from './utils/storage';
 import { initializeVoices } from './utils/textToSpeech';
@@ -326,7 +327,20 @@ function App() {
         onResetApp={handleResetApp}
       />
 
-      {currentView === 'setup' ? (
+      {!userData.guideShown ? (
+        <FeatureGuide 
+          onComplete={() => {
+            const updatedData = { ...userData, guideShown: true };
+            setUserData(updatedData);
+            saveUserData(updatedData);
+          }}
+          onSkip={() => {
+            const updatedData = { ...userData, guideShown: true };
+            setUserData(updatedData);
+            saveUserData(updatedData);
+          }}
+        />
+      ) : currentView === 'setup' ? (
         <SetupFlow onComplete={handleSetupComplete} />
       ) : currentView === 'review' ? (
         <MonthlyReview 

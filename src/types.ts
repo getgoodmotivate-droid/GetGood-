@@ -96,6 +96,7 @@ export interface LoginStreak {
 }
 
 export interface UserData {
+  guideShown: boolean;
   setupComplete: boolean;
   startDate: string | null;
   beforePhoto: string | null;

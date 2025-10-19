@@ -3,6 +3,7 @@ import { UserData } from '../types';
 const STORAGE_KEY = 'getgood_user_data';
 
 const defaultUserData: UserData = {
+  guideShown: false,
   setupComplete: false,
   startDate: null,
   beforePhoto: null,
