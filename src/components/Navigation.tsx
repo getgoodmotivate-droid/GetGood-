@@ -1,6 +1,7 @@
 import React from 'react';
 import { Home, TrendingUp, Trophy, Menu, X, Target, MessageCircle, Sprout, DollarSign } from 'lucide-react';
 import { useState } from 'react';
+import Logo from './Logo';
 
 interface NavigationProps {
   currentView: 'workout' | 'achievements' | 'walloffame' | 'milestones' | 'coach' | 'plant' | 'earnings';
@@ -31,6 +32,11 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, onNavigate,
       >
         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
+
+      {/* Logo in top left for mobile */}
+      <div className="md:hidden fixed top-4 left-4 z-50">
+        <Logo size="sm" className="text-white" />
+      </div>
 
       {/* Mobile Menu Overlay */}
       {isOpen && (

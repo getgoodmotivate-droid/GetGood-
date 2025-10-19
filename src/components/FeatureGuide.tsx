@@ -22,6 +22,7 @@ import {
   Heart,
   Zap,
 } from 'lucide-react';
+import Logo from './Logo';
 
 interface FeatureGuideProps {
   onComplete: () => void;
@@ -181,6 +182,11 @@ const FeatureGuide: React.FC<FeatureGuideProps> = ({ onComplete, onSkip }) => {
               <X className="w-6 h-6" />
             </button>
             <div className="text-center">
+              {currentPage === 0 && (
+                <div className="mb-4">
+                  <Logo size="lg" className="justify-center" />
+                </div>
+              )}
               <div className="text-6xl mb-4">{currentPageData.emoji}</div>
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
                 {currentPageData.title}

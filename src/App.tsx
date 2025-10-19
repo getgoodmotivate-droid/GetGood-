@@ -7,6 +7,7 @@ import { Navigation } from './components/Navigation';
 import { AchievementsView } from './components/AchievementsView';
 import { WallOfFame } from './components/WallOfFame';
 import { FeatureGuide } from './components/FeatureGuide';
+import Logo from './components/Logo';
 import { UserData, Exercise, WeeklyAchievement, Transformation, Milestone } from './types';
 import { loadUserData, saveUserData } from './utils/storage';
 import { initializeVoices } from './utils/textToSpeech';
@@ -277,11 +278,9 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
         <div className="text-center animate-fade-in">
-          <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
-            gEtgOOd
-          </h1>
+          <Logo size="xl" className="justify-center mb-8" />
           <LoadingSpinner />
         </div>
       </div>
